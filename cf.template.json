@@ -124,6 +124,7 @@
         "ChatsSQSsendMessagePolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
+                "PolicyName": "ChatsSQSsendMessagePolicy",
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -145,6 +146,7 @@
         "ChatsSQSpullPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
+                "PolicyName": "ChatsSQSpullPolicy",
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -170,6 +172,7 @@
         "ChatsDynamodbPutItemPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
+                "PolicyName": "ChatsDynamodbPutItemPolicy",
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
