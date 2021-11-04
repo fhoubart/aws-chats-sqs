@@ -1,0 +1,593 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+        "ChatsVPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "Cidr": { "Ref": "VPCCidr" }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "29352699-2c8d-457a-a582-1aa443cda98e"
+                }
+            }
+        },
+        "ChatsPublicSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "Cidr": { "Ref": "VPCCidr" },
+                "VpcId": {
+                    "Ref": "ChatsVPC"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "4791a5b4-83af-4eee-9632-bdff41c52cf3"
+                }
+            }
+        },
+        "ChatsSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "SecurityGroup for web server",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80,
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": {
+                            "Ref": "SSHLocation"
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "2b2a4eab-3c01-42e9-994f-c4dad840a8a5"
+                }
+            }
+        },
+        "PublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "8f0ec78b-7c12-46ab-8813-42c7335b6232"
+                }
+            }
+        },
+        "PublicRoute": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable"
+                },
+                "GatewayId": {
+                    "Ref": "ChatsInternetGateway"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "0c7c5e57-9537-4f3f-8a70-9546fff30312"
+                }
+            },
+            "DependsOn": [
+                "ChatsInternetGateway",
+                "ChatsVPCGatewayAttachment"
+            ]
+        },
+        "ChatsInternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "b7ae28a1-6e9f-4de2-8d32-819c05c02920"
+                }
+            }
+        },
+        "ChatsVPCGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "InternetGatewayId": {
+                    "Ref": "ChatsInternetGateway"
+                },
+                "VpcId": {
+                    "Ref": "ChatsVPC"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "fd7ca6d5-51fa-4146-af40-d8bd924a82b5"
+                }
+            }
+        },
+        "ChatsSQSsendMessagePolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "VisualEditor0",
+                            "Effect": "Allow",
+                            "Action": "sqs:SendMessage",
+                            "Resource": { "Fn::GetAttr": [ "ChatsSQSQueue", "Arn"] }
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "37a80f64-db26-4e1e-9b29-cef4e86290a0"
+                }
+            }
+        },
+        "ChatsSQSpullPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "VisualEditor0",
+                            "Effect": "Allow",
+                            "Action": [
+                                "sqs:DeleteMessage",
+                                "sqs:ReceiveMessage",
+                                "sqs:GetQueueAttributes"
+                            ],
+                            "Resource": { "Fn::GetAttr": [ "ChatsSQSQueue", "Arn"] }
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "b0993665-d015-42eb-acbf-97d603623c55"
+                }
+            }
+        },
+        "ChatsDynamodbPutItemPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "VisualEditor0",
+                            "Effect": "Allow",
+                            "Action": [
+                                "dynamodb:PutItem",
+                                "dynamodb:UpdateItem"
+                            ],
+                            "Resource": { "Fn::GetAttr": [ "ChatsDynamoDBTable", "Arn"] }
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "396c2099-51ee-49b5-87cc-008c0921fafa"
+                }
+            }
+        },
+        "ChatsDynamoDBTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions" : [
+                    {"AttributeName": "name", "AttributeType": "S"},
+                    {"AttributeName": "date", "AttributeType": "S"}
+                ],
+                "KeySchema" : [
+                    {"AttributeName": "name", "KeyType": "HASH"},
+                    {"AttributeName": "date", "KeyType": "RANGE"}
+                ],
+                "BillingMode": "PAY_PER_REQUEST",
+                "TableName" : "chatsDB",
+                "Tags" : [ {
+                    "Key":"description",
+                    "Value":"Cliques sur les chats"
+                }]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7fe87814-6d45-4207-8ac3-4f6fa6cb26c2"
+                }
+            }
+        },
+        "ChatsSQSQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {},
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e6a7deb3-cf50-4948-93c1-bafd249a4db8"
+                }
+            }
+        },
+        "ChatsInstance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "InstanceType": "t2.micro",
+                "ImageId": "ami-0eb34a1ff6bafc83f",
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "ChatsPublicSubnet"
+                        }
+                    }
+                ],
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "ChatsSecurityGroup"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e39d2316-f06b-4871-a790-3890c494a3d6"
+                }
+            },
+            "DependsOn": [
+                "PublicRoute"
+            ]
+        },
+        "ChatsLambdaSQSPull": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Role": { "Fn::GetAttr": [ "ChatsLambdaSQSPullRole", "Arn"] }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "8d05c7af-3db3-4691-bffb-365f57b5fe6c"
+                }
+            },
+            "DependsOn": [
+                "ChatsDynamoDBTable",
+                "ChatsSQSQueue"
+            ]
+        },
+        "ChatsCognitoIdentityPool": {
+            "Type": "AWS::Cognito::IdentityPool",
+            "Properties": {
+                "AllowUnauthenticatedIdentities": true,
+                "IdentityPoolName": "ChatsIdentityPool"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "4ab56b09-3e34-47a3-b92a-c02ae8b0d644"
+                }
+            }
+        },
+        "ChatsLambdaSQSPullRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Ref": "ChatsSQSpullPolicy"
+                        }
+                    },
+                    {
+                        "PolicyName": {
+                            "Ref": "ChatsDynamodbPutItemPolicy"
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "ef1f9328-87c9-4d4a-8c05-def3b2191f26"
+                }
+            }
+        },
+        "ChatsCognitoIdentityPoolUnauthorizedRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Ref": "ChatsSQSsendMessagePolicy"
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "3556d307-064d-49e5-91c3-bd370735032c"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "KeyName": {
+            "Description": "Name of an EC2 KeyPair to enable SSH access to the instance.",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
+        },
+        "VPCCidr": {
+            "Description": " The IP address range of the VPC.",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "Default": "10.0.0.0/24",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        }
+    },
+    "Outputs": {},
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "29352699-2c8d-457a-a582-1aa443cda98e": {
+                "size": {
+                    "width": 520,
+                    "height": 230
+                },
+                "position": {
+                    "x": -160,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": [
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3"
+                ]
+            },
+            "4791a5b4-83af-4eee-9632-bdff41c52cf3": {
+                "size": {
+                    "width": 460,
+                    "height": 140
+                },
+                "position": {
+                    "x": -129,
+                    "y": 99
+                },
+                "z": 1,
+                "parent": "29352699-2c8d-457a-a582-1aa443cda98e",
+                "embeds": [
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "e39d2316-f06b-4871-a790-3890c494a3d6"
+                ],
+                "iscontainedinside": [
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e",
+                    "29352699-2c8d-457a-a582-1aa443cda98e"
+                ]
+            },
+            "2b2a4eab-3c01-42e9-994f-c4dad840a8a5": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -70,
+                    "y": -50
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "8f0ec78b-7c12-46ab-8813-42c7335b6232": {
+                "size": {
+                    "width": 110,
+                    "height": 100
+                },
+                "position": {
+                    "x": 190,
+                    "y": 118
+                },
+                "z": 2,
+                "parent": "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                "embeds": [
+                    "0c7c5e57-9537-4f3f-8a70-9546fff30312"
+                ]
+            },
+            "0c7c5e57-9537-4f3f-8a70-9546fff30312": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 220,
+                    "y": 150
+                },
+                "z": 3,
+                "parent": "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                "embeds": [],
+                "iscontainedinside": [
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232",
+                    "8f0ec78b-7c12-46ab-8813-42c7335b6232"
+                ],
+                "dependson": [
+                    "f88512c8-6be9-4d68-88ec-806c017f5fcd",
+                    "fd7ca6d5-51fa-4146-af40-d8bd924a82b5",
+                    "b7ae28a1-6e9f-4de2-8d32-819c05c02920"
+                ]
+            },
+            "b7ae28a1-6e9f-4de2-8d32-819c05c02920": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 270,
+                    "y": 300
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "fd7ca6d5-51fa-4146-af40-d8bd924a82b5": {
+                "source": {
+                    "id": "29352699-2c8d-457a-a582-1aa443cda98e"
+                },
+                "target": {
+                    "id": "b7ae28a1-6e9f-4de2-8d32-819c05c02920"
+                },
+                "z": 0
+            },
+            "e39d2316-f06b-4871-a790-3890c494a3d6": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -71.99826335347406,
+                    "y": 129.03340721557407
+                },
+                "z": 2,
+                "parent": "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                "embeds": [],
+                "isassociatedwith": [
+                    "2b2a4eab-3c01-42e9-994f-c4dad840a8a5"
+                ],
+                "iscontainedinside": [
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3",
+                    "4791a5b4-83af-4eee-9632-bdff41c52cf3"
+                ],
+                "dependson": [
+                    "0c7c5e57-9537-4f3f-8a70-9546fff30312"
+                ]
+            },
+            "e6a7deb3-cf50-4948-93c1-bafd249a4db8": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -402.9753134663369,
+                    "y": -187.74414121185046
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "8d05c7af-3db3-4691-bffb-365f57b5fe6c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -161.6738422916417,
+                    "y": -272.5652644126524
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "7fe87814-6d45-4207-8ac3-4f6fa6cb26c2",
+                    "e6a7deb3-cf50-4948-93c1-bafd249a4db8"
+                ]
+            },
+            "7fe87814-6d45-4207-8ac3-4f6fa6cb26c2": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 110,
+                    "y": -250
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "37a80f64-db26-4e1e-9b29-cef4e86290a0": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -486.3340035085043,
+                    "y": -88.29868642470336
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "b0993665-d015-42eb-acbf-97d603623c55": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -517.0450998398292,
+                    "y": -271.1028312540179
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "396c2099-51ee-49b5-87cc-008c0921fafa": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -5.193494317748455,
+                    "y": -314.9758260130534
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "4ab56b09-3e34-47a3-b92a-c02ae8b0d644": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -223.49561632928356,
+                    "y": -140.43915689335725
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "ef1f9328-87c9-4d4a-8c05-def3b2191f26": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -209.16493736297275,
+                    "y": -324.152289802088
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "3556d307-064d-49e5-91c3-bd370735032c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -272.16098905544214,
+                    "y": -70.48818832041128
+                },
+                "z": 0
+            }
+        }
+    }
+}
