@@ -35,4 +35,4 @@ jobs:
           name: chats-sqs
           template: cf.template.json
           no-fail-on-empty-changeset: "0"
-          parameter-overrides: "KeyName=lab-keypair,VPCCidr=0.0.0.0/24"
+          parameter-overrides: "KeyName=lab-keypair,VPCCidr=10.0.0.0/24"
