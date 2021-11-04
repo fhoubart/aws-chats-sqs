@@ -4,7 +4,9 @@
         "ChatsVPC": {
             "Type": "AWS::EC2::VPC",
             "Properties": {
-                "Cidr": { "Ref": "VPCCidr" }
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "CidrBlock": { "Ref": "VPCCidr" }
             },
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
@@ -15,7 +17,7 @@
         "ChatsPublicSubnet": {
             "Type": "AWS::EC2::Subnet",
             "Properties": {
-                "Cidr": { "Ref": "VPCCidr" },
+                "CidrBlock": { "Ref": "VPCCidr" },
                 "VpcId": {
                     "Ref": "ChatsVPC"
                 }
