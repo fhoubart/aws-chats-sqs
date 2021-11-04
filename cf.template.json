@@ -53,7 +53,10 @@
         },
         "PublicRouteTable": {
             "Type": "AWS::EC2::RouteTable",
-            "Properties": {},
+            "Properties": {
+                "VpcId": {
+                    "Ref": "ChatsVPC"
+                }},
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "8f0ec78b-7c12-46ab-8813-42c7335b6232"
@@ -79,6 +82,17 @@
                 "ChatsInternetGateway",
                 "ChatsVPCGatewayAttachment"
             ]
+        },
+        "ChatsSubnetRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable"
+                },
+                "SubnetId": {
+                    "Ref": "ChatsPublicSubnet"
+                }
+            }
         },
         "ChatsInternetGateway": {
             "Type": "AWS::EC2::InternetGateway",
