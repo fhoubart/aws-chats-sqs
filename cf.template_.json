@@ -64,6 +64,30 @@
                     "id": "ef1f9328-87c9-4d4a-8c05-def3b2191f26"
                 }
             }
+        },
+        "ChatsDynamoDBTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions" : [
+                    {"AttributeName": "name", "AttributeType": "S"},
+                    {"AttributeName": "date", "AttributeType": "S"}
+                ],
+                "KeySchema" : [
+                    {"AttributeName": "name", "KeyType": "HASH"},
+                    {"AttributeName": "date", "KeyType": "RANGE"}
+                ],
+                "BillingMode": "PAY_PER_REQUEST",
+                "TableName" : "chatsDB",
+                "Tags" : [ {
+                    "Key":"description",
+                    "Value":"Cliques sur les chats"
+                }]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7fe87814-6d45-4207-8ac3-4f6fa6cb26c2"
+                }
+            }
         }
 
     },
