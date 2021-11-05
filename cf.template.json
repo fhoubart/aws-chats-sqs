@@ -326,7 +326,7 @@
                 "ChatsSQSQueue"
             ]
         },
-        "ChatsEventSourceMapping" {
+        "ChatsEventSourceMapping": {
             "Type": "AWS::Lambda::EventSourceMapping",
             "Properties": {
                 "BatchSize": 5,
