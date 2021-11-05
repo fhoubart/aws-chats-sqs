@@ -239,6 +239,7 @@
                 "ImageId": "ami-0eb34a1ff6bafc83f",
                 "NetworkInterfaces": [
                     {
+                        "AssociatePublicIpAddress": "true",
                         "DeviceIndex":0,
                         "SubnetId": {
                             "Ref": "ChatsPublicSubnet"
@@ -420,7 +421,25 @@
             "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
         }
     },
-    "Outputs": {},
+    "Outputs": {
+        "URL": {
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "WebServerInstance",
+                                "PublicIp"
+                            ]
+                        }
+                    ]
+                ]
+            },
+            "Description": "Newly created application URL"
+        }
+    },
     "Metadata": {
         "AWS::CloudFormation::Designer": {
             "29352699-2c8d-457a-a582-1aa443cda98e": {
