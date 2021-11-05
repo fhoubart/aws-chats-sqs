@@ -349,7 +349,13 @@
                         "ChatsCognitoIdentityPoolUnauthorizedRole",
                         "Arn"
                      ]
-                  }
+                  },
+                  "authenticated":{
+                    "Fn::GetAtt":[
+                       "ChatsCognitoIdentityPoolUnauthorizedRole",
+                       "Arn"
+                    ]
+                 }
                }
             }
         },
