@@ -263,6 +263,7 @@
         "ChatsLambdaSQSPull": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
+                "Runtime": "nodejs14.x",
                 "Code": {
                     "ZipFile": { "Fn::Join": [
                         "", [
