@@ -275,7 +275,9 @@
                 }
             },
             "DependsOn": [
-                "PublicRoute"
+                "PublicRoute",
+                "ChatsCognitoIdentityPool",
+                "ChatsSQSQueue"
             ]
         },
         "ChatsLambdaSQSPull": {
