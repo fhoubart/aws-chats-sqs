@@ -240,7 +240,7 @@
                         "SubnetId": {
                             "Ref": "ChatsPublicSubnet"
                         },
-                        "GroupIds": [
+                        "GroupSet": [
                             {
                                 "Ref": "ChatsSecurityGroup"
                             }
