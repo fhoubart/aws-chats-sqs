@@ -236,6 +236,7 @@
                 "ImageId": "ami-0eb34a1ff6bafc83f",
                 "NetworkInterfaces": [
                     {
+                        "DeviceIndex":0,
                         "SubnetId": {
                             "Ref": "ChatsPublicSubnet"
                         }
