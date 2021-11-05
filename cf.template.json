@@ -262,7 +262,8 @@
                             "git clone https://fhoubart@bitbucket.org/fhoubart/testphaser_aws.git",
                             "rm -rf html",
                             "ln -s testphaser_aws/public_html html",
-                            { "Fn::Join": ["",["sed -i -e 's|%REGION%|eu-west-3|' -e 's|%IDENTITY_POOL_ID%|",{"Ref":"ChatsCognitoIdentityPool"},"|' -e 's|%SQS_QUEUE_URL%|",{"Ref":"ChatsSQSQueue"},"|' html/bundle.js"]]}
+                            { "Fn::Join": ["",["sed -i -e 's|%REGION%|eu-west-3|' -e 's|%IDENTITY_POOL_ID%|",{"Ref":"ChatsCognitoIdentityPool"},"|' -e 's|%SQS_QUEUE_URL%|",{"Ref":"ChatsSQSQueue"},"|' html/bundle.js"]]},
+                            "systemctl start httpd"
                             ]
                         ]
                     }
