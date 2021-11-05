@@ -411,7 +411,7 @@
                             "Action": ["sts:AssumeRoleWithWebIdentity"],
                             "Condition": {
                                 "StringEquals": {
-                                  "cognito-identity.amazonaws.com:aud": "eu-west-3:9e1ed739-9eb3-4abf-82b0-a34603b16b8a"
+                                  "cognito-identity.amazonaws.com:aud": { "Ref": "ChatsCognitoIdentityPool"}
                                 },
                                 "ForAnyValue:StringLike": {
                                   "cognito-identity.amazonaws.com:amr": "unauthenticated"
