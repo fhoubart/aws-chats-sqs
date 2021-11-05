@@ -259,6 +259,35 @@
         "ChatsLambdaSQSPull": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
+                "Code": { "Fn::Join": [
+                    "", [
+                        { "Fn::Join": ["", ["var tableName = '", { "Ref": "ChatsDynamoDBTable" }, "';"]] },
+                        "var AWS = require('aws-sdk');",
+                        "var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});",
+                        "",
+                        "exports.handler = async (event,context, callback) => {",
+                        "    console.log('Handling event');",
+                        "    console.log(event);",
+                        "    var promises = [];",
+                        "    for(let message of event.Records) {",
+                        "    promises.push(new Promise(function(resolve, reject) {",
+                        "        dynamodb.putItem({",
+                        "            'TableName': tableName,",
+                        "            'Item' : {",
+                        "                'name': {'S':message.body},",
+                        "                'date': {'S':(new Date()).toLocaleDateString('fr-FR') + ' ' + (new Date()).toLocaleTimeString('fr-FR') + ' ' + Date.now()},",
+                        "            }",
+                        "        }, function(err, data) {",
+                        "            if (err) { console.log('error: '+err); reject(Error(err)); }",
+                        "            else { resolve(200); }",
+                        "        });",
+                        "    }));",
+                        "    }",
+                        "    return Promise.all(promises);",
+                        "};"
+
+                    ]
+                ]},
                 "Role": { "Fn::GetAtt": [ "ChatsLambdaSQSPullRole", "Arn"] }
             },
             "Metadata": {
