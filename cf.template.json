@@ -320,6 +320,22 @@
                 }
             }
         },
+        "ChatsIdentityPoolRoleAttachment":{
+            "Type":"AWS::Cognito::IdentityPoolRoleAttachment",
+            "Properties":{
+               "IdentityPoolId":{
+                  "Ref":"ChatsCognitoIdentityPool"
+               },
+               "Roles":{
+                  "unauthenticated":{
+                     "Fn::GetAtt":[
+                        "ChatsCognitoIdentityPoolUnauthorizedRole",
+                        "Arn"
+                     ]
+                  }
+               }
+            }
+        },
         "ChatsLambdaSQSPullRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
