@@ -291,7 +291,7 @@
                         {
                             "Effect": "Allow",
                             "Principal": {
-                                "Service": ["*"]
+                                "Service": ["cognito-idp.amazonaws.com"]
                             },
                             "Action": ["sts:AssumeRole"]
                         }
@@ -317,7 +317,7 @@
                         {
                             "Effect": "Allow",
                             "Principal": {
-                                "Service": ["*"]
+                                "Service": ["cognito-idp.amazonaws.com"]
                             },
                             "Action": ["sts:AssumeRole"]
                         }
