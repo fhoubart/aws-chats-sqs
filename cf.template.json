@@ -326,6 +326,15 @@
                 "ChatsSQSQueue"
             ]
         },
+        "ChatsEventSourceMapping" {
+            "Type": "AWS::Lambda::EventSourceMapping",
+            "Properties": {
+                "BatchSize": 5,
+                "MaximumBatchingWindowInSeconds": 60,
+                "EventSourceArn": {"Fn::GetAtt":["ChatsSQSQueue","Arn"]},
+                "FunctionName": {"Fn::GetAtt":["ChatsLambdaSQSPull","Arn"]}
+            }
+        },
         "ChatsCognitoIdentityPool": {
             "Type": "AWS::Cognito::IdentityPool",
             "Properties": {
