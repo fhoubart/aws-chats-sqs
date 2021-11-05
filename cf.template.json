@@ -68,6 +68,7 @@
         "PublicRoute": {
             "Type": "AWS::EC2::Route",
             "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
                 "RouteTableId": {
                     "Ref": "PublicRouteTable"
                 },
