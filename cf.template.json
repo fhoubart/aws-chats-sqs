@@ -239,14 +239,14 @@
                         "DeviceIndex":0,
                         "SubnetId": {
                             "Ref": "ChatsPublicSubnet"
-                        }
+                        },
+                        "GroupIds": [
+                            {
+                                "Ref": "ChatsSecurityGroup"
+                            }
+                        ]
                     }
-                ],
-                "SecurityGroupIds": [
-                    {
-                        "Ref": "ChatsSecurityGroup"
-                    }
-                ]
+                ]               
             },
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
