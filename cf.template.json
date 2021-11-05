@@ -264,9 +264,10 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Runtime": "nodejs14.x",
+                "Handler": "index.handler",
                 "Code": {
                     "ZipFile": { "Fn::Join": [
-                        "", [
+                        "\n", [
                             { "Fn::Join": ["", ["var tableName = '", { "Ref": "ChatsDynamoDBTable" }, "';"]] },
                             "var AWS = require('aws-sdk');",
                             "var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});",
