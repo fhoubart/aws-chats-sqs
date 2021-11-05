@@ -406,7 +406,7 @@
                         {
                             "Effect": "Allow",
                             "Principal": {
-                                "Service": ["cognito-identity.amazonaws.com"]
+                                "Federated": "cognito-identity.amazonaws.com"
                             },
                             "Action": ["sts:AssumeRoleWithWebIdentity"],
                             "Condition": {
