@@ -122,7 +122,7 @@
             }
         },
         "ChatsSQSsendMessagePolicy": {
-            "Type": "AWS::IAM::Policy",
+            "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
                 "PolicyName": "ChatsSQSsendMessagePolicy",
                 "PolicyDocument": {
@@ -144,9 +144,10 @@
             }
         },
         "ChatsSQSpullPolicy": {
-            "Type": "AWS::IAM::Policy",
+            "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
                 "PolicyName": "ChatsSQSpullPolicy",
+
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -170,7 +171,7 @@
             }
         },
         "ChatsDynamodbPutItemPolicy": {
-            "Type": "AWS::IAM::Policy",
+            "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
                 "PolicyName": "ChatsDynamodbPutItemPolicy",
                 "PolicyDocument": {
@@ -284,17 +285,9 @@
         "ChatsLambdaSQSPullRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "Policies": [
-                    {
-                        "PolicyName": {
-                            "Ref": "ChatsSQSpullPolicy"
-                        }
-                    },
-                    {
-                        "PolicyName": {
-                            "Ref": "ChatsDynamodbPutItemPolicy"
-                        }
-                    }
+                "ManagedPolicyArns": [
+                    { "Ref": "ChatsSQSpullPolicy" },
+                    { "Ref": "ChatsDynamodbPutItemPolicy" }
                 ]
             },
             "Metadata": {
@@ -306,12 +299,8 @@
         "ChatsCognitoIdentityPoolUnauthorizedRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "Policies": [
-                    {
-                        "PolicyName": {
-                            "Ref": "ChatsSQSsendMessagePolicy"
-                        }
-                    }
+                "ManagedPolicyArns": [
+                    { "Ref": "ChatsSQSsendMessagePolicy" }
                 ]
             },
             "Metadata": {
