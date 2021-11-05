@@ -124,7 +124,7 @@
         "ChatsSQSsendMessagePolicy": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
-                "PolicyName": "ChatsSQSsendMessagePolicy",
+                "ManagedPolicyName": "ChatsSQSsendMessagePolicy",
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
