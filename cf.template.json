@@ -146,7 +146,7 @@
         "ChatsSQSpullPolicy": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
-                "PolicyName": "ChatsSQSpullPolicy",
+                "ManagedPolicyName": "ChatsSQSpullPolicy",
 
                 "PolicyDocument": {
                     "Version": "2012-10-17",
@@ -173,7 +173,7 @@
         "ChatsDynamodbPutItemPolicy": {
             "Type": "AWS::IAM::ManagedPolicy",
             "Properties": {
-                "PolicyName": "ChatsDynamodbPutItemPolicy",
+                "ManagedPolicyName": "ChatsDynamodbPutItemPolicy",
                 "PolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
